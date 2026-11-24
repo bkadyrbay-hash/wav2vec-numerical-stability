@@ -1,0 +1,14 @@
+model:
+  name: facebook/wav2vec2-base-960h
+  sample_rate: 16000
+
+data:
+  corpus_dir: data/raw
+  sample_size: 50
+  random_state: 42
+
+precision:
+  formats: [float64, float32, float16, int8]
+
+distance:
+  metric: cosine

@@ -1,0 +1,60 @@
+stages:
+  prepare:
+    cmd: python src/prepare.py
+    deps:
+      - src/prepare.py
+      - data/raw
+    params:
+      - data.corpus_dir
+      - data.sample_size
+      - data.random_state
+    outs:
+      - data/processed/file_index.csv
+
+  extract:
+    cmd: python src/extract.py
+    deps:
+      - src/extract.py
+      - data/processed/file_index.csv
+    params:
+      - model.name
+      - model.sample_rate
+    outs:
+      - data/embeddings/embeddings_float32.npy
+      - data/embeddings/metadata.csv
+
+  convert:
+    cmd: python src/convert.py
+    deps:
+      - src/convert.py
+      - data/embeddings/embeddings_float32.npy
+    params:
+      - precision.formats
+    outs:
+      - data/precision/embeddings_float64.npy
+      - data/precision/embeddings_float32.npy
+      - data/precision/embeddings_float16.npy
+      - data/precision/embeddings_int8.npy
+
+  distances:
+    cmd: python src/distances.py
+    deps:
+      - src/distances.py
+      - data/precision
+      - data/embeddings/metadata.csv
+    params:
+      - precision.formats
+    outs:
+      - data/distances/distances.csv
+      - data/distances/summary.csv
+
+  visualise:
+    cmd: python src/visualise.py
+    deps:
+      - src/visualise.py
+      - data/distances/distances.csv
+      - data/distances/summary.csv
+    outs:
+      - data/figures/boxplots.png
+      - data/figures/barchart.png
+      - data/figures/ratio.png
